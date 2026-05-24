@@ -52,7 +52,15 @@ public_users.get('/author/:author',function (req, res) {
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const titleName = req.params.title.toLowerCase();
+  const result = [];
+  for (let isbn in books) {
+      if (books[isbn].title.toLowerCase() === titleName) {
+          result.push(books[isbn]);
+      }
+  }
+  if (result.length) res.status(200).json(result);
+  else res.status(404).json({ message: "Aucun livre trouvé" });
 });
 
 //  Get book review
