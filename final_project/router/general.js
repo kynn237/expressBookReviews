@@ -19,7 +19,14 @@ public_users.get('/',function (req, res) {
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const isbn = req.params.isbn;          // récupère l'ISBN depuis l'URL
+  const book = books[isbn];              // books est l'objet importé plus haut
+
+  if (book) {
+      res.status(200).json(book);        // renvoie le livre trouvé
+  } else {
+      res.status(404).json({ message: "Livre non trouvé" });
+  }
  });
   
 // Get book details based on author
