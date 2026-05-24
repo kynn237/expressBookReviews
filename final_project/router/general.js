@@ -64,37 +64,60 @@ public_users.get('/isbn/:isbn', async function (req, res) {
     }
 });
   
-// Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-  
-  const authorName = req.params.author.toLowerCase(); // insensible à la casse
-  const booksList = [];
+// Get book details based on author (async/await version)
+public_users.get('/author/:author', async function (req, res) {
+    const authorName = req.params.author.toLowerCase();
 
-  // Parcourir l'objet books (clés = isbn)
-  for (let isbn in books) {
-      if (books[isbn].author.toLowerCase() === authorName) {
-          booksList.push(books[isbn]);
-      }
-  }
+    const getBooksByAuthor = () => {
+        return new Promise((resolve, reject) => {
+            const result = [];
+            for (let isbn in books) {
+                if (books[isbn].author.toLowerCase() === authorName) {
+                    result.push(books[isbn]);
+                }
+            }
+            if (result.length > 0) {
+                resolve(result);
+            } else {
+                reject(new Error("Aucun livre trouvé pour cet auteur"));
+            }
+        });
+    };
 
-  if (booksList.length > 0) {
-      res.status(200).json(booksList);
-  } else {
-      res.status(404).json({ message: "Aucun livre trouvé pour cet auteur" });
-  }
+    try {
+        const booksByAuthor = await getBooksByAuthor();
+        res.status(200).json(booksByAuthor);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
 });
 
-// Get all books based on title
-public_users.get('/title/:title',function (req, res) {
-  const titleName = req.params.title.toLowerCase();
-  const result = [];
-  for (let isbn in books) {
-      if (books[isbn].title.toLowerCase() === titleName) {
-          result.push(books[isbn]);
-      }
-  }
-  if (result.length) res.status(200).json(result);
-  else res.status(404).json({ message: "Aucun livre trouvé" });
+// Get all books based on title (async/await version)
+public_users.get('/title/:title', async function (req, res) {
+    const titleName = req.params.title.toLowerCase();
+
+    const getBooksByTitle = () => {
+        return new Promise((resolve, reject) => {
+            const result = [];
+            for (let isbn in books) {
+                if (books[isbn].title.toLowerCase() === titleName) {
+                    result.push(books[isbn]);
+                }
+            }
+            if (result.length > 0) {
+                resolve(result);
+            } else {
+                reject(new Error("Aucun livre trouvé pour ce titre"));
+            }
+        });
+    };
+
+    try {
+        const booksByTitle = await getBooksByTitle();
+        res.status(200).json(booksByTitle);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
 });
 
 //  Get book review
